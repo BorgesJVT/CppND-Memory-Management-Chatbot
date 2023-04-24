@@ -15,6 +15,7 @@ ChatBot::ChatBot()
     _image = nullptr;
     _chatLogic = nullptr;
     _rootNode = nullptr;
+    _currentNode = nullptr;
 }
 
 // constructor WITH memory allocation
@@ -25,9 +26,10 @@ ChatBot::ChatBot(std::string filename)
     // invalidate data handles
     _chatLogic = nullptr;
     _rootNode = nullptr;
+    _currentNode = nullptr;
 
     // load image into heap memory
-    _image = new wxBitmap(filename, wxBITMAP_TYPE_PNG);
+    _image = new wxBitmap(filename, wxBITMAP_TYPE_PNG); // QUESTION: Why don't use a smart pointer for that?
 }
 
 ChatBot::~ChatBot()
@@ -38,12 +40,75 @@ ChatBot::~ChatBot()
     if(_image != NULL) // Attention: wxWidgets used NULL and not nullptr
     {
         delete _image;
-        _image = NULL;
+        _image = NULL; // QUESTION: If I have delete(d) the line before, why to point to NULL?
     }
 }
 
 //// STUDENT CODE
 ////
+// copy constructor
+ChatBot::ChatBot(const ChatBot& chatbot)
+{
+    std::cout << "ChatBot Copy Constructor" << std::endl;
+    _image = new wxBitmap(*chatbot._image);
+    *_image = *chatbot._image;
+    _currentNode = chatbot._currentNode;
+    _rootNode = chatbot._rootNode;
+    _chatLogic = chatbot._chatLogic;
+}
+// copy assignment
+ChatBot &ChatBot::operator=(const ChatBot& chatbot)
+{
+    std::cout << "ChatBot Copy Assignment Operator" << std::endl;
+    // self-asignment check
+    if (this != &chatbot) {
+        if (_image != nullptr) { 
+            delete _image;
+        }
+        _image = new wxBitmap(*chatbot._image);
+        *_image = *chatbot._image;
+        _currentNode = chatbot._currentNode;
+        _rootNode = chatbot._rootNode;
+        _chatLogic = chatbot._chatLogic;
+    }
+
+    return *this;
+}
+// move constructor
+ChatBot::ChatBot(ChatBot&& chatbot)
+{
+    std::cout << "ChatBot Move Constructor" << std::endl;
+    _image = std::move(chatbot._image);
+    _currentNode = std::move(chatbot._currentNode);
+    _rootNode = std::move(chatbot._rootNode);
+    _chatLogic = std::move(chatbot._chatLogic);
+
+    chatbot._chatLogic = nullptr;
+    chatbot._rootNode = nullptr;
+    chatbot._currentNode = nullptr;
+    chatbot._image = nullptr;
+}
+// move assignment
+ChatBot &ChatBot::operator=(ChatBot&& chatbot)
+{
+    std::cout << "ChatBot Move Assignment Operator" << std::endl;
+    // self-asignment check
+    if (this != &chatbot) {
+        _image = std::move(chatbot._image);
+        _currentNode = std::move(chatbot._currentNode);
+        _rootNode = std::move(chatbot._rootNode);
+        _chatLogic = std::move(chatbot._chatLogic);
+        
+        _chatLogic->SetChatbotHandle(this);
+
+        chatbot._image = nullptr;
+        chatbot._chatLogic = nullptr;
+        chatbot._rootNode = nullptr;
+        chatbot._currentNode = nullptr;        
+    }
+
+    return *this;
+}
 
 ////
 //// EOF STUDENT CODE

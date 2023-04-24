@@ -3,6 +3,7 @@
 
 #include <wx/bitmap.h>
 #include <string>
+#include <memory>
 
 class GraphNode; // forward declaration
 class ChatLogic; // forward declaration
@@ -29,13 +30,20 @@ public:
 
     //// STUDENT CODE
     ////
-
+    // copy constructor
+    ChatBot(const ChatBot& chatbot);
+    // copy assignment
+    ChatBot &operator=(const ChatBot& chatbot);
+    // move constructor
+    ChatBot(ChatBot &&ChatBot);
+    // move assignment
+    ChatBot &operator=(ChatBot &&chatbot);
     ////
     //// EOF STUDENT CODE
 
     // getters / setters
     void SetCurrentNode(GraphNode *node);
-    void SetRootNode(GraphNode *rootNode) { _rootNode = rootNode; }
+    void SetRootNode(GraphNode *rootNode) { _rootNode = rootNode; } // QUESTION: Also, shouldn't GraphNode *_rootNode be deleted somewhere in the code?
     void SetChatLogicHandle(ChatLogic *chatLogic) { _chatLogic = chatLogic; }
     ChatLogic* GetChatLogicHandle() { return _chatLogic; }
     wxBitmap *GetImageHandle() { return _image; }
